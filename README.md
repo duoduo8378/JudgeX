@@ -3,6 +3,7 @@
 > 把主观的代码质量判断，转成可自动执行的断言。
 > 解决 AI Coding 任务中「谁来判分、怎么判才公平、怎么拦住作弊解法」三个核心问题。
 
+[![CI](https://github.com/duoduo8378/JudgeX/actions/workflows/ci.yml/badge.svg)](https://github.com/duoduo8378/JudgeX/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Deps](https://img.shields.io/badge/dependencies-none-brightgreen.svg)]()
@@ -218,6 +219,14 @@ difficulty_calibration:
 - 模型 Coding 能力测评
 - 代码生成质量门禁（适配到 CI 流程）
 - 任意需要「代码是否做对了」客观判定的场景
+
+---
+
+## 参与贡献
+
+欢迎提交 Issue 与 PR，尤其欢迎**误判案例**报告 —— 某个本该判 0 分的解拿了高分，或某个正确解被误拦，这类问题直接影响评测结论的可靠性。
+
+贡献前请读 [CONTRIBUTING.md](CONTRIBUTING.md)，其中说明了判分逻辑修改的注意事项。
 
 ---
 
