@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  demo:
+    name: 四场景判分验证
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 运行演示脚本
+        run: python examples/demo.py
+
+      - name: 校验判分结果符合预期
+        run: |
+          python examples/demo.py > output.txt
+          cat output.txt
+          echo "--- 校验关键结论 ---"
+          # 正常解必须通过
+          grep -q "总分: 100/100" output.txt || { echo "FAIL: 正常解未通过"; exit 1; }
+          # 两种作弊必须被结构层否决
+          grep -q "结构层违规：测试文件篡改" output.txt || { echo "FAIL: 未检出测试文件篡改"; exit 1; }
+          grep -q "结构层违规：绕过式异常处理" output.txt || { echo "FAIL: 未检出绕过式异常处理"; exit 1; }
+          # 缺陷解必须落榜
+          grep -q "总分: 46/100" output.txt || { echo "FAIL: 缺陷解未被正确拦截"; exit 1; }
+          grep -q "未达阈值" output.txt || { echo "FAIL: 缺陷解结论错误"; exit 1; }
+          echo "全部校验通过"
+
+  lint:
+    name: 语法检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 编译检查
+        run: python -m compileall -q judgex examples

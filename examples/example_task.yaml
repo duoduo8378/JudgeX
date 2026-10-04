@@ -1,0 +1,86 @@
+# 任务判分配置示例
+# 每个 Milestone 任务对应一份此配置。
+# 真实项目中由任务设计人员编写，随任务一同版本化管理。
+
+task:
+  id: repo-a-003
+  title: 修复嵌套配置空字典解析异常
+  repo: org/repo-a
+  commit: a1b2c3d
+  type: 缺陷修复
+  difficulty: 中
+  pass_threshold: 60          # 低于此分视为未通过
+
+# 三层权重，总和 100
+weights:
+  static: 20                  # 格式 / 语法 / 构建
+  structure: 20               # 修改范围 / 禁止项
+  behavior_target: 30         # 目标用例
+  behavior_boundary: 15       # 边界用例
+  behavior_regression: 15     # 回归套件
+
+# ---- 静态层检查命令 ----
+static_commands:
+  - name: 格式
+    cmd: ["ruff", "check", "."]
+  - name: 类型
+    cmd: ["mypy", "src/"]
+  - name: 构建
+    cmd: ["python", "-m", "compileall", "src/"]
+
+# ---- 结构层规则 ----
+structure_rules:
+  allowed_paths:              # 允许修改的文件（正则）
+    - "src/.*"
+  forbidden_paths:            # 禁止触碰的文件
+    - "(^|/)tests?/"
+    - "test_.*\\.py$"
+    - "_test\\.go$"
+    - ".*_spec\\.ts$"
+    - "Test\\.java$"
+  forbidden_patterns:         # 禁用的 API
+    - "\\bos\\.system\\("
+    - "\\bsubprocess\\.run\\("
+  max_deleted_lines: 20       # 删除行数上限
+  detect_empty_except: true   # 检测空 catch 块
+
+# ---- 动态层用例 ----
+behavior_cases:
+  target:                     # 任务要求的新行为
+    - desc: 多层嵌套含空字典不报错
+      cmd: ["python", "-m", "pytest", "tests/test_target_01.py::test_nested_empty"]
+    - desc: 空字典层被跳过
+      cmd: ["python", "-m", "pytest", "tests/test_target_02.py::test_skip_empty"]
+    - desc: 单层空字典
+      cmd: ["python", "-m", "pytest", "tests/test_target_03.py::test_single_empty"]
+    - desc: 已有解析结果不变
+      cmd: ["python", "-m", "pytest", "tests/test_target_04.py::test_keep_result"]
+    - desc: 深层嵌套空字典
+      cmd: ["python", "-m", "pytest", "tests/test_target_05.py::test_deep_nested"]
+  boundary:                   # 边界与异常输入
+    - desc: 根节点为空字典
+      cmd: ["python", "-m", "pytest", "tests/test_edge_01.py::test_root_empty"]
+    - desc: 值为 None
+      cmd: ["python", "-m", "pytest", "tests/test_edge_02.py::test_none_value"]
+    - desc: 空字符串键
+      cmd: ["python", "-m", "pytest", "tests/test_edge_03.py::test_empty_key"]
+  regression:                 # 原仓库测试，必须全过
+    - desc: 原仓库全量测试
+      cmd: ["python", "-m", "pytest", "tests/"]
+
+# ---- 难度校准记录 ----
+# 每个任务定版前跑 3-5 个基线模型，通过率落在 20%-70% 区间才定版
+difficulty_calibration:
+  baseline_models:
+    - {name: "baseline-A", pass_rate: 0.72}
+    - {name: "baseline-B", pass_rate: 0.45}
+  conclusion: 通过率落在目标区间，难度定为「中」
+
+# ---- 质检清单（任务本身的质量检查）----
+quality_checklist:
+  solvable: true              # 参考解存在且通过自身判分
+  no_leak: true               # prompt 不含函数名/文件路径/算法名等直接线索
+  unambiguous: true           # 关键术语有定义，验收标准可判定
+  env_complete: true          # 纯净容器内可构建，测试基线达标
+  judge_complete: true        # 三层判分齐备
+  difficulty_valid: true      # 难度经基线校准

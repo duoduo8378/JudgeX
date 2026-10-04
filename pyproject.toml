@@ -1,0 +1,20 @@
+[project]
+name = "judgex"
+version = "0.1.0"
+description = "AI Coding 任务三层判分框架：把主观代码质量判断转为可自动执行的断言"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["code-judge", "ai-coding", "evaluation", "benchmark", "llm"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/<your-account>/JudgeX"
+Repository = "https://github.com/<your-account>/JudgeX"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["judgex*"]
