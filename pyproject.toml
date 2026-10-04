@@ -9,8 +9,8 @@ keywords = ["code-judge", "ai-coding", "evaluation", "benchmark", "llm"]
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/<your-account>/JudgeX"
-Repository = "https://github.com/<your-account>/JudgeX"
+Homepage = "https://github.com/duoduo8378/JudgeX"
+Repository = "https://github.com/duoduo8378/JudgeX"
 
 [build-system]
 requires = ["setuptools>=61"]

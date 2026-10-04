@@ -78,7 +78,7 @@ def test_nested_empty(candidate_module):
 纯标准库，零第三方依赖。
 
 ```bash
-git clone https://github.com/<your-account>/JudgeX.git
+git clone https://github.com/duoduo8378/JudgeX.git
 cd JudgeX
 python examples/demo.py
 ```
